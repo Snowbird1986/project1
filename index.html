@@ -24,57 +24,81 @@
         </div>
     </div>
     <div class="container-fluid col-lg-10 offset-lg-1">
+        <div class="row">
+            <div class="container-fluid col-lg-4" id="form">
+                <div class="row title">
+                        <h5 id=title>Commute Search</h5>
+                    </div>
+                <form role="form">
+                    <div class="form-group">
+                        <label for="commuteAddress"><h5>Address you want to commute to.</h5></label>
+                        <input type="text" class="form-control" id="commuteAddress" type="text">
+                    </div>
+                    <div class="form-group">
+                        <label for="commute"><h5>Desired Commute.</h5></label>
+                        <select class="form-control form-control-lg" id="commute">
+                                <option>5</option>
+                                <option>10</option>
+                                <option>15</option>
+                                <option>20</option>
+                                <option>25</option>
+                                <option>30</option>
+                                <option>40</option>
+                                <option>50</option>
+                                <option>60</option>
+                            </select>
+                    </div>
+                    <button type="submit" class="btn btn-default" id="run-search">
+                        <i class="fa fa-search"></i> Search Homes</button>
+                    <button class="btn btn-default" id="clear-all">
+                        <i class="fa fa-trash"></i> Reset</button>
+                </form>
+            </div>
+            <div class="container-fluid col-lg-4">
+                <div class="row title">
+                    <h5 id=title>Map</h5>
+                </div>
+                <div class="col-lg-12">
+                    
+                </div>
+            </div>
+            <div class="container-fluid col-lg-4">
+                    <div class="row title">
+                        <h5 id=title>Pictures</h5>
+                    </div>
+                    <div class="col-lg-12">
+                        
+                    </div>
+                </div>
+        </div>
+    </div>
+
+    <div class="container-fluid col-lg-10 offset-lg-1" id="section2">
         <div class="row title">
-            <h5 id=title>Current Train Schedule</h5>
+            <h5 id=title>Results:</h5>
         </div>
         <div class="row trains-view">
             <div class="col-md-4">
-                <p class="columnTitle">Train Name</p>
+                <p class="columnTitle">Address</p>
             </div>
             <div class="col-md-2">
-                <p class="columnTitle">Destination</p>
+                <p class="columnTitle">Commute (min)</p>
             </div>
             <div class="col-md-2">
-                <p class="columnTitle">Frequency (min)</p>
+                <p class="columnTitle">Price</p>
             </div>
             <div class="col-md-2">
-                <p class="columnTitle">Next Arrival</p>
+                <p class="columnTitle">Square Footage</p>
             </div>
-            <div class="col-md-2">
-                <p class="columnTitle">Minutes Away</p>
+            <div class="col-md-1">
+                <p class="columnTitle">Bedrooms</p>
+            </div>
+            <div class="col-md-1">
+                <p class="columnTitle">Baths</p>
             </div>
         </div>
         <div id="addTrains">
 
-        </div>
-    </div>
-    <div class="container-fluid col-lg-10 offset-lg-1" id="section2">
-        <div class="row title">
-            <h5 id=title>Add Train</h5>
-        </div>
-        <div class="container-fluid col-lg-12" id="form">
-                <form role="form">
-                    <div class="form-group">
-                        <label for="train-name">Train Name</label>
-                        <input type="text" class="form-control" id="train-name" type="text">
-                    </div>
-                    <div class="form-group">
-                        <label for="destination">Destination</label>
-                        <input type="text" class="form-control" id="destination" type="text">
-                    </div>
-                    <div class="form-group">
-                        <label for="first-time">First Train Time (HH:MM - military time)</label>
-                        <input type="text" class="form-control" id="first-time" type="time">
-                    </div>
-                    <div class="form-group">
-                        <label for="frequency">Frequency (min)</label>
-                        <input type="text" class="form-control" id="frequency" type="number">
-                    </div>
-                    <button type="submit" class="btn btn-default" id="run-search">
-                        <i class="fa fa-search"></i> Add Train</button>
-                    <button class="btn btn-default" id="clear-all">
-                        <i class="fa fa-trash"></i> Clear Results</button>
-                </form>
         </div>
     </div>
 </body>

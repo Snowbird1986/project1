@@ -40,3 +40,6 @@ h5 {
 body {
     background-image: url(../images/purty_wood.png);
 }
+#map {
+    height: 100%;
+  }

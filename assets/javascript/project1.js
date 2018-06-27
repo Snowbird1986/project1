@@ -12,9 +12,6 @@ var config = {
   firebase.initializeApp(config);
   var database = firebase.database();
 
-  var locations = [
-
-    ]
   var apiKeyOnboard = "9c3b42979280ab6f8e1f5a4e7c01c591"
   var apiKeyCanary = "test_PS7RMDTG53J5POFG3DEI"
   var apiSecretCanary = "wFH3N1tESMmwRQMMOUfJI75daTEa1SgS"
@@ -55,13 +52,19 @@ var config = {
         // ========================
 
         for (var i = 0; i < results.length; i++) {
-        // var searcDiv = $("<div>").addClass("col-md-3")
-        // var p = $("<p>").text("Rating: " + results[i].rating);
-        // var searchImage = $("<img>").attr("src", results[i].images.fixed_height_still.url).attr("data-still",results[i].images.fixed_height_still.url).attr("data-animate",results[i].images.fixed_height.url).attr("data-state","still").addClass("gif")
-        // searcDiv.append(p);
-        // searcDiv.append(searchImage);
-        // $("#gif-view").prepend(searcDiv)
-
+            var row = $("<div>").addClass("row train-view")
+            var addressCol = $("<div>").addClass("col-md-4")
+            var commuteCol = $("<div>").addClass("col-md-2")
+            var priceCol = $("<div>").addClass("col-md-2")
+            var footageCol = $("<div>").addClass("col-md-2")
+            var bathCol = $("<div>").addClass("col-md-1")
+            var bedCol = $("<div>").addClass("col-md-1")
+            var p = $("<p>").attr("id", i)
+            var addr = results[i].address.oneLine
+            p.append(addr)
+            addressCol.append(p)
+            row.append(addressCol)
+            $("#addTrains").append(row)
 
         };
     });

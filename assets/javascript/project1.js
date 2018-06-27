@@ -12,10 +12,14 @@ var config = {
   firebase.initializeApp(config);
   var database = firebase.database();
 
+  var locations = [
 
+    ]
   var apiKeyOnboard = "9c3b42979280ab6f8e1f5a4e7c01c591"
   var apiKeyCanary = "test_PS7RMDTG53J5POFG3DEI"
   var apiSecretCanary = "wFH3N1tESMmwRQMMOUfJI75daTEa1SgS"
+  var googleAPIKey = "AIzaSyB8e6gTpgvxoyBbaRGAk-V3HhmicXOyVWk"
+  
   var postData = [{'address': '10851 MASTIN BLVD',
                    'zipcode': '66210',
                     'format':'JSON',        
@@ -25,6 +29,8 @@ var config = {
     var searchTerm = "address1=10851%20MASTIN%20BLVD&address2=OVERLAND%20PARK%2C%20KS%2066210";
     var queryURLOnboard = "https://search.onboard-apis.com/propertyapi/v1.0.0/property/address?" + searchTerm + "&radius=1&propertytype=SFR&orderby=distance&page=1&pagesize=100"
     var queryURLCanary = "https://api.housecanary.com/v2/property/on_market?address=123+Main+St&zipcode=94132"
+    var googleMapURL = "https://maps.googleapis.com/maps/api/js?key="+googleAPIKey+"&callback=initMap"
+
    console.log(queryURLOnboard)
 
     // Creates AJAX call for the specific movie button being clicked
@@ -106,6 +112,38 @@ var config = {
 
         };
     }).catch(err =>{ console.log(err)});
+
+
+
+
+
+
+    function initMap() {
+
+        var map = new google.maps.Map(document.getElementById('map'), {
+          zoom: 3,
+          center: {lat: -28.024, lng: 140.887}
+        });
+
+        // Create an array of alphabetical characters used to label the markers.
+        var labels = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+
+        // Add some markers to the map.
+        // Note: The code uses the JavaScript Array.prototype.map() method to
+        // create an array of markers based on a given "locations" array.
+        // The map() method here has nothing to do with the Google Maps API.
+        var markers = locations.map(function(location, i) {
+          return new google.maps.Marker({
+            position: location,
+            label: labels[i % labels.length]
+          });
+        });
+
+        // Add a marker clusterer to manage the markers.
+        var markerCluster = new MarkerClusterer(map, markers,
+            {imagePath: 'https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/m'});
+      }
+      
 });
 // const request = require('request');
 // const url = 'https://api.housecanary.com/v2/property/value';

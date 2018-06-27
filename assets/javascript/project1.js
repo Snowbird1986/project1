@@ -1,5 +1,6 @@
 $(document).ready(function(){
 // Initialize Firebase
+
 var config = {
     apiKey: "AIzaSyDsZcPe2YbNAVIrKlgji6lu4t7ftUU18D0",
     authDomain: "project1-1529767008392.firebaseapp.com",
@@ -13,9 +14,13 @@ var config = {
 
 
   var apiKeyOnboard = "9c3b42979280ab6f8e1f5a4e7c01c591"
-  var apiKeyCanary = "S68ZQ9O1M021B25UNZY9"
-  var apiSecretCanary = "ApqbTyv8g7gwOlABz3JoH21MtxsemzQU"
-  var postData = [{'address': '10851 MASTIN BLVD', 'zipcode': '66210'},]
+  var apiKeyCanary = "test_PS7RMDTG53J5POFG3DEI"
+  var apiSecretCanary = "wFH3N1tESMmwRQMMOUfJI75daTEa1SgS"
+  var postData = [{'address': '10851 MASTIN BLVD',
+                   'zipcode': '66210',
+                    'format':'JSON',        
+                    username: apiKeyCanary,
+                    password: apiSecretCanary}]
 
     var searchTerm = "address1=10851%20MASTIN%20BLVD&address2=OVERLAND%20PARK%2C%20KS%2066210";
     var queryURLOnboard = "https://search.onboard-apis.com/propertyapi/v1.0.0/property/address?" + searchTerm + "&radius=1&propertytype=SFR&orderby=distance&page=1&pagesize=100"
@@ -54,17 +59,29 @@ var config = {
 
         };
     });
+    // response = requests.post(queryURLCanary, params=postData, auth=(apiKeyCanary, apiSecretCanary))
     $.ajax({
         url: queryURLCanary,
-        username: apiKeyCanary,
-        password: apiSecretCanary,
-        body: postData,
-        json: true,
-        // beforeSend: function(xhr) {
-        //     xhr.setRequestHeader("Accept", "application/json");
-        //     xhr.setRequestHeader("apikey", apiKey);
-        //     xhr.setRequestHeader("Accept", "application/json");
-        //    },
+        // username: apiKeyCanary,
+        // password: apiSecretCanary,
+        // // auth: {
+        // //     user: apiKeyCanary,
+        // //     pass: apiSecretCanary
+        // // },
+        // headers: {
+        //     "Access-Control-Allow-Origin": "housecanary.com",
+        //     "Authorization": "Basic " + btoa(apiKeyCanary + ":" + apiSecretCanary)
+        //   },
+        //   crossDomain: true,
+        // body: postData,
+        // json: true,
+        beforeSend: function(xhr) {
+            xhr.setRequestHeader("Accept", "application/json");
+            xhr.setRequestHeader("Access-Control-Allow-Origin", "housecanary.com");
+            xhr.setRequestHeader("user", apiKeyCanary);
+            xhr.setRequestHeader("pass", apiSecretCanary);
+            xhr.setRequestHeader("Accept", "application/json");
+           },
         // data: {
         //     format: "JSON",
         //     'api-key': apiKey
@@ -88,7 +105,7 @@ var config = {
 
 
         };
-    });
+    }).catch(err =>{ console.log(err)});
 });
 // const request = require('request');
 // const url = 'https://api.housecanary.com/v2/property/value';

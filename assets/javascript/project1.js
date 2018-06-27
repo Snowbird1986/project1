@@ -12,6 +12,9 @@ var config = {
   firebase.initializeApp(config);
   var database = firebase.database();
 
+  var locations = [
+
+  ]
   var apiKeyOnboard = "9c3b42979280ab6f8e1f5a4e7c01c591"
   var apiKeyCanary = "test_PS7RMDTG53J5POFG3DEI"
   var apiSecretCanary = "wFH3N1tESMmwRQMMOUfJI75daTEa1SgS"
@@ -66,7 +69,11 @@ var config = {
             row.append(addressCol)
             $("#addTrains").append(row)
 
+            var location = {lat:  results[i].location.latitude,  lng:  results[i].location.longitude};
+            locations.push(location)
+            
         };
+        console.log(locations)
     });
     // response = requests.post(queryURLCanary, params=postData, auth=(apiKeyCanary, apiSecretCanary))
     $.ajax({

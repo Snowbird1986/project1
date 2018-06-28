@@ -107,7 +107,7 @@ var config = {
             // console.log(destinations)
             // locations.push(location)
 
-            database.ref().set({
+            database.ref().push({
                 locations: location,
                 destinations: destination,
                 addresses: address,
@@ -122,7 +122,7 @@ var config = {
                 var resultsGoogleDist = responseGoogleDist.rows
                 commute=resultsGoogleDist[0].elements[0].duration.text
                 commutes.push(resultsGoogleDist[0].elements[0].duration.text)
-                database.ref().set({
+                database.ref().push({
                     commutes:commute,
                   });
                 // console.log(commutes)

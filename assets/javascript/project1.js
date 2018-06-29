@@ -12,10 +12,8 @@ var config = {
   firebase.initializeApp(config);
   var database = firebase.database();
 
-  var locations = [
+  var locations = []
 
-  ]
-  var commutes = []
   var apiKeyOnboard = "9c3b42979280ab6f8e1f5a4e7c01c591"
   var apiKeyCanary = "S68ZQ9O1M021B25UNZY9"
   var apiSecretCanary = "ApqbTyv8g7gwOlABz3JoH21MtxsemzQU"
@@ -23,6 +21,9 @@ var config = {
   
   var postData = []
   var destinations =""
+  var destinations2 =[]
+  var addresses =[]
+  var commutes = []
     // var queryURLCanary = "https://api.housecanary.com/v2/property/on_market"
     var searchTerm = "address1=10851%20MASTIN%20BLVD&address2=OVERLAND%20PARK%2C%20KS%2066210";
     var queryURLOnboard = "https://search.onboard-apis.com/propertyapi/v1.0.0/property/address?" + searchTerm + "&radius=1&propertytype=SFR&orderby=distance&page=1&pagesize=100"
@@ -34,6 +35,14 @@ var config = {
    console.log(queryURLOnboard)
 
     // Creates AJAX call for the specific movie button being clicked
+    $("#run-search").on("click", function(event) {
+        // Don't refresh the page!
+        event.preventDefault();
+        origin = $("#commuteAddress").val().trim()+" "+$("#city").val().trim()+" "+$("#state").val().trim()+" "+$("#zip").val().trim()
+        console.log(origin)
+        searchTerm = "address1="+$("#commuteAddress").val().trim()+"&address2="+$("#city").val().trim()+" "+$("#state").val().trim()+" "+$("#zip").val().trim()
+        console.log(searchTerm)
+        queryURLOnboard = "https://search.onboard-apis.com/propertyapi/v1.0.0/property/address?" + searchTerm + "&radius=1&propertytype=SFR&orderby=distance&page=1&pagesize=100"
     $.ajax({
         url: queryURLOnboard,
         beforeSend: function(xhr) {
@@ -41,10 +50,6 @@ var config = {
             xhr.setRequestHeader("apikey", apiKeyOnboard);
             xhr.setRequestHeader("Accept", "application/json");
        },
-        // data: {
-        //     format: "JSON",
-        //     'api-key': apiKey
-        // },
         method: "GET",
         
     }).then(function(response) {
@@ -76,197 +81,67 @@ var config = {
         }
     
         
-        console.log(postData)
+        // console.log(postData)
 
         
 
         // YOUR CODE GOES HERE!!!
-        console.log(response)
+        // console.log(response)
         // var results = response.property
 
         // ========================
 
         for (var i = 0; i < 25; i++) {
-            // var row = $("<div>").addClass("row train-view")
-            // var addressCol = $("<div>").addClass("col-md-4").attr("id", "address"+i)
-            // var commuteCol = $("<div>").addClass("col-md-2").attr("id", "commute"+i)
-            // var priceCol = $("<div>").addClass("col-md-2").attr("id", "price"+i)
-            // var footageCol = $("<div>").addClass("col-md-2").attr("id", "footage"+i)
-            // var bathCol = $("<div>").addClass("col-md-1").attr("id", "bath"+i)
-            // var bedCol = $("<div>").addClass("col-md-1").attr("id", "bed"+i)
-            // var p = $("<p>").attr("id", i)
+
             var address = results[i].address.oneLine
-            // p.append(address)
-            // addressCol.append(p)
-            // row.append(addressCol).append(commuteCol).append(priceCol).append(priceCol).append(footageCol).append(bathCol).append(bedCol)
-            // $("#addTrains").append(row)
+            addresses.push(address)
             var location = {lat:  results[i].location.latitude,  lng:  results[i].location.longitude};
-            destination =results[i].location.latitude+"%2C"+results[i].location.longitude+"%7C"
+            locations.push(location)
+            destination = results[i].location.latitude+" "+results[i].location.longitude
+            destinations2.push(destination)
             // console.log(destination)
             destinations += destination
-            // console.log(destinations)
-            // locations.push(location)
-
-            database.ref().push({
-                locations: location,
-                destinations: destination,
-                addresses: address,
-              });
-            googleDistanceURL = "https://maps.googleapis.com/maps/api/distancematrix/json?origins="+origin+"&destinations="+destination+"&mode=walking&key="+googleAPIKey
-            $.ajax({
-                url: googleDistanceURL,
-                method: "GET",
-                
-            }).then(function(responseGoogleDist) {
-                console.log(responseGoogleDist)
-                var resultsGoogleDist = responseGoogleDist.rows
-                commute=resultsGoogleDist[0].elements[0].duration.text
-                commutes.push(resultsGoogleDist[0].elements[0].duration.text)
-                database.ref().push({
-                    commutes:commute,
-                  });
-                // console.log(commutes)
-            });
-            // commuteCol.append(commutes[i])
-            // $("#addTrains").append(row)
-            
-
-            // googleDistanceURL = "https://maps.googleapis.com/maps/api/distancematrix/json?origins="+origin+"&destinations="+destinations+"&mode=walking&key="+googleAPIKey
-            
+ 
         };
-        console.log(locations)
-        console.log(commutes)
-        // for(var k = 0; k < commutes.length; k++){
-        //     $("#commute"+k).text(commutes[k])
-        // }
+        var service = new google.maps.DistanceMatrixService();
+            service.getDistanceMatrix(
+                {
+                  origins: [origin],
+                  destinations: destinations2,
+                  travelMode: 'WALKING',
+                }, callback);
+            function callback(response, status) {
+                var results = response.rows[0]
+                for (var k = 0; k < 25; k++) {
+                    var commute = results.elements[k].duration.text
+                    console.log(commute)
+                    commutes.push(commute)
+                }
+                database.ref().push({
+                    locations: locations,
+                    destinations: destinations2,
+                    addresses: addresses,
+                    commutes: commutes,
+                  });
+                }
     });
+    
     database.ref().on("child_added", function(childSnapshot) {
+        for (var l = 0; l < childSnapshot.val().addresses.length; l++) {
+        $("#addTrains").append("<div class='row'><div class='col-md-4'> " + childSnapshot.val().addresses[l] +
+          " </div><div class='col-md-2'> " + childSnapshot.val().commutes[l] +
+            // " </div><div class='col-md-2'> " + childSnapshot.val().prices +
+            //   " </div><div class='col-md-2'> " + childSnapshot.val().footages +
+            //   " </div><div class='col-md-1'> " + childSnapshot.val().bedrooms +
+            //   " </div><div class='col-md-1'> " + childSnapshot.val().baths + 
+              " </div></div>");
+            }}
       
-        // Log everything that's coming out of snapshot
-        console.log(childSnapshot.val().locations);
-        console.log(childSnapshot.val().destinations);
-        console.log(childSnapshot.val().commutes);
-        console.log(childSnapshot.val().addresses);
-
-        
-        // full list of items to the well
-        // $("#addTrains").append("<div class='row'><div class='col-md-4'> " + childSnapshot.val().addresses +
-        //   " </div><div class='col-md-2'> " + childSnapshot.val().commutes +
-        //     " </div><div class='col-md-2'> " + childSnapshot.val().prices +
-        //       " </div><div class='col-md-2'> " + childSnapshot.val().footages +
-        //       " </div><div class='col-md-1'> " + childSnapshot.val().bedrooms +
-        //       " </div><div class='col-md-1'> " + childSnapshot.val().baths + " </div></div>");
-              
         // Handle the errors
-      }, function(errorObject) {
+      , function(errorObject) {
         console.log("Errors handled: " + errorObject.code);
       });
-    database.ref().on("value", function(snapshot){
-        $("#addTrains").append("<div class='row'><div class='col-md-4'> " + snapshot.val().addresses +
-          " </div><div class='col-md-2'> " + snapshot.val().commutes +
-            " </div><div class='col-md-2'> " + snapshot.val().prices +
-              " </div><div class='col-md-2'> " + snapshot.val().footages +
-              " </div><div class='col-md-1'> " + snapshot.val().bedrooms +
-              " </div><div class='col-md-1'> " + snapshot.val().baths + " </div></div>");
-            },function(errorObject) {
-                console.log("Errors handled: " + errorObject.code);
-              });
-    // googleDistanceURL = "https://maps.googleapis.com/maps/api/distancematrix/json?origins="+origin+"&destinations="+locations+"&mode=walking&key="+googleAPIKey
-    // googleDistanceURL = "https://maps.googleapis.com/maps/api/distancematrix/json?origins="+origin+"&destinations=38.929489%2C-94.708076%7C38.929214%2C-94.708081%7C38.930466%2C-94.709072%7C38.930538%2C-94.709192%7C38.930159%2C-94.709180%7C38.930589%2C-94.709306%7C38.930589%2C-94.709306%7C38.930223%2C-94.709258%7C38.930269%2C-94.709302%7C38.930627%2C-94.709407%7C38.930317%2C-94.709397%7C38.936427%2C-94.698739%7C38.936425%2C-94.698705%7C38.936422%2C-94.698671%7C38.930351%2C-94.709480%7C38.930656%2C-94.709554%7C38.930377%2C-94.709545%7C38.930670%2C-94.709670%7C38.930392%2C-94.709656%7C38.930682%2C-94.709782%7C38.930404%2C-94.709763%7C38.936698%2C-94.698673%7C38.936695%2C-94.698639%7C38.936383%2C-94.697846%7C38.936382%2C-94.697812%7C&mode=walking&key="+googleAPIKey
-    // console.log(googleDistanceURL)
-    // $.ajax({
-    //     url: googleDistanceURL,
-    //     "destination_addresses": [locations],
-    //     "origin_addresses": [origin],
-    //     method: "GET"
-    // }).then(function(responseGoogleDist) {
-    //     console.log(responseGoogleDist)
-    //     var resultsGoogleDist = response.rows
-        
-
-    // });
-//     var distance_text = calculateDistance(origin, locations)
-//     function calculateDistance(origin, locations) {
-//     service = new google.maps.DistanceMatrixService();
-//     service.getDistanceMatrix(
-//     {
-//         origins: [origin],
-//         destinations: [locations],
-//         travelMode: 'WALKING',
-//         transitOptions: TransitOptions,
-//         drivingOptions: DrivingOptions,
-//         unitSystem: UnitSystem,
-//         avoidHighways: Boolean,
-//         avoidTolls: Boolean,
-//     }, callback);
-// }
-
-
-//     function callback(response, status) {
-//         if (status == 'OK') {
-//           var origins = response.originAddresses;
-//           var destinations = response.destinationAddresses;
-      
-//           for (var i = 0; i < origins.length; i++) {
-//             var results = response.rows[i].elements;
-//             for (var j = 0; j < results.length; j++) {
-//               var element = results[j];
-//               var distance = element.distance.text;
-//               var duration = element.duration.text;
-//               var from = origins[i];
-//               var to = destinations[j];
-//             }
-//           }
-//         }
-//       }
     
-    
-
-    // response = requests.post(queryURLCanary, params=postData, auth=(apiKeyCanary, apiSecretCanary))
-    // $.ajax({
-    //     url: queryURLCanary,
-    //     headers: {
-    //         "Authorization": "Basic " + btoa(apiKeyCanary + ":" + apiSecretCanary)
-    //       },
-    //     method: "GET"
-    // }).then(function(response) {
-
-    //     // YOUR CODE GOES HERE!!!
-    //     console.log(response)
-    //     var resultsCanary = response.property
-
-    //     // ========================
-
-    //     for (var j = 0; j < resultsCanary.length; j++) {
-
-    //     };
-    // }).catch(err =>{ console.log(err)});
-    // console.log(postData)
-    // for(k=0; k<5;k++){
-    // var queryURLCanary = "https://api.housecanary.com/v2/property/on_market?address="+postData[k].address+"&zipcode="+postdata[k].zipcode
-    // $.ajax({
-    //     url: queryURLCanary,
-    //     headers: {
-    //         "Authorization": "Basic " + btoa(apiKeyCanary + ":" + apiSecretCanary)
-    //     },
-    //     // data: postData[0],
-    //     // json: true,
-    //     method: "GET"
-    // }).then(function(response) {
-
-    //     // YOUR CODE GOES HERE!!!
-    //     console.log(response)
-    //     var resultsCanary = response.property
-
-    //     // ========================
-
-        
-    // }).catch(err =>{ console.log(err)});}
-
-
-
-
-
 
     function initMap() {
 
@@ -293,25 +168,33 @@ var config = {
         var markerCluster = new MarkerClusterer(map, markers,
             {imagePath: 'https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/m'});
       }
+    // $("#run-search").on("click", function(event) {
+    // // Don't refresh the page!
+    // event.preventDefault();
+    // origin = $("#commuteAddress").val().trim()+" "+$("#city").val().trim()+" "+$("#state").val().trim()+" "+$("#zip").val().trim()
+    // console.log(origin)
+    // searchTerm = "address1=10851%20MASTIN%20BLVD&address2=OVERLAND%20PARK%2C%20KS%2066210"
+    $("#commuteAddress").val("");
+    $("#city").val("");
+    $("#state").val("");
+    $("#zip").val("");
+    });
+    $("#clear-all").on("click", function(event) {
+        // Don't refresh the page!
+        event.preventDefault();
+        locations = []
+        postData = []
+        destinations =""
+        destinations2 =[]
+        addresses =[]
+        commutes = []
+        $("#addTrains").empty()
+        database.ref().set({
+            locations: locations,
+            destinations: destinations2,
+            addresses: addresses,
+            commutes: commutes,
+          });
+    });   
       
-
-// const request = require('request');
-// const url = 'https://api.housecanary.com/v2/property/value';
-
-// const postData = [
-//   {'address': '43 Valmonte Plaza', 'zipcode': '90274'},
-//   {'address': '7500 Melrose Ave', 'zipcode': '90046'}
-// ];
-
-// request.post({
-//   url: url,
-//   auth: {
-//     user: 'my_api_key',
-//     pass: 'my_api_secret'
-//   },
-//   body: postData,
-//   json: true
-// }, function (error, response, body) {
-//   console.log(body);
-// });
 });

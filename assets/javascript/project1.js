@@ -1,14 +1,14 @@
 $(document).ready(function(){
 // Initialize Firebase
 
-var config = {
-    apiKey: "AIzaSyDsZcPe2YbNAVIrKlgji6lu4t7ftUU18D0",
-    authDomain: "project1-1529767008392.firebaseapp.com",
-    databaseURL: "https://project1-1529767008392.firebaseio.com",
-    projectId: "project1-1529767008392",
-    storageBucket: "project1-1529767008392.appspot.com",
-    messagingSenderId: "534435451804"
-  };
+    var config = {
+        apiKey: "AIzaSyDsZcPe2YbNAVIrKlgji6lu4t7ftUU18D0",
+        authDomain: "project1-1529767008392.firebaseapp.com",
+        databaseURL: "https://project1-1529767008392.firebaseio.com",
+        projectId: "project1-1529767008392",
+        storageBucket: "project1-1529767008392.appspot.com",
+        messagingSenderId: "534435451804"
+    };
   firebase.initializeApp(config);
   var database = firebase.database();
 
@@ -27,10 +27,12 @@ var config = {
     // var queryURLCanary = "https://api.housecanary.com/v2/property/on_market"
     var searchTerm = "address1=10851%20MASTIN%20BLVD&address2=OVERLAND%20PARK%2C%20KS%2066210";
     var queryURLOnboard = "https://search.onboard-apis.com/propertyapi/v1.0.0/property/address?" + searchTerm + "&radius=1&propertytype=SFR&orderby=distance&page=1&pagesize=100"
+
     // var queryURLCanary = "https://api.housecanary.com/v2/property/on_market?address=10590 W 108TH TER&zipcode=66210"
     var googleMapURL = "https://maps.googleapis.com/maps/api/js?key="+googleAPIKey+"&callback=initMap"
     var origin = "10851 MASTIN BLVD OVERLAND PARK KS 66210"
     var googleDistanceURL = "https://maps.googleapis.com/maps/api/distancematrix/json?units=imperial&origins="+origin+"&destinations="+locations+"&mode=bicycwalkingling&key="+googleAPIKey
+
 
    console.log(queryURLOnboard)
 
@@ -125,6 +127,7 @@ var config = {
                   });
                 }
     });
+
     
     database.ref().on("child_added", function(childSnapshot) {
         for (var l = 0; l < childSnapshot.val().addresses.length; l++) {
@@ -143,31 +146,14 @@ var config = {
       });
     
 
-    function initMap() {
 
-        var map = new google.maps.Map(document.getElementById('map'), {
-          zoom: 3,
-          center: {lat: -28.024, lng: 140.887}
-        });
 
-        // Create an array of alphabetical characters used to label the markers.
-        var labels = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-
-        // Add some markers to the map.
-        // Note: The code uses the JavaScript Array.prototype.map() method to
-        // create an array of markers based on a given "locations" array.
-        // The map() method here has nothing to do with the Google Maps API.
-        var markers = locations.map(function(location, i) {
-          return new google.maps.Marker({
-            position: location,
-            label: labels[i % labels.length]
-          });
-        });
 
         // Add a marker clusterer to manage the markers.
         var markerCluster = new MarkerClusterer(map, markers,
             {imagePath: 'https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/m'});
-      }
+      })
+    
     // $("#run-search").on("click", function(event) {
     // // Don't refresh the page!
     // event.preventDefault();
@@ -197,4 +183,29 @@ var config = {
           });
     });   
       
-});
+    function initMap() {
+
+        var map = new google.maps.Map(document.getElementById('map'), {
+          zoom: 3,
+          center: {lat: 38.922, lng: -94.6708}
+        });
+
+        // Create an array of alphabetical characters used to label the markers.
+        var labels = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+
+        // Add some markers to the map.
+        // Note: The code uses the JavaScript Array.prototype.map() method to
+        // create an array of markers based on a given "locations" array.
+        // The map() method here has nothing to do with the Google Maps API.
+        var markers = locations.map(function(location, i) {
+          return new google.maps.Marker({
+            position: location,
+            label: labels[i % labels.length]
+          });
+        });
+
+        // Add a marker clusterer to manage the markers.
+        var markerCluster = new MarkerClusterer(map, markers,
+            {imagePath: 'https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/m'});
+      }
+

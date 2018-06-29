@@ -10,8 +10,10 @@
     <link rel="stylesheet" type="text/css" href="./assets/css/style.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.2/moment.js"></script>
     <script src="https://www.gstatic.com/firebasejs/5.1.0/firebase.js"></script>
+
     <script src="https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/markerclusterer.js"></script>
-    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB8e6gTpgvxoyBbaRGAk-V3HhmicXOyVWk"> </script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB8e6gTpgvxoyBbaRGAk-V3HhmicXOyVWk&callback=initMap"> </script>
+
     <script type="text/javascript" src="./assets/javascript/project1.js"></script>
     <title>Commute Search</title>
 </head>
@@ -34,19 +36,19 @@
                 <form role="form">
                     <div class="form-group">
                         <label for="commuteAddress"><h5>Address you want to commute to.</h5></label>
-                        <input type="text" class="form-control" id="commuteAddress" type="text">
+                        <input type="text" autocomplete="address-line1" class="form-control" id="commuteAddress" type="text">
                     </div>
                     <div class="form-group">
                         <label for="city"><h5>City</h5></label>
-                        <input type="text" class="form-control" id="city" type="text">
+                        <input type="text" autocomplete="address-level1" class="form-control" id="city" type="text">
                     </div>
                     <div class="form-group">
                         <label for="state"><h5>State</h5></label>
-                        <input type="text" class="form-control" id="state" type="text">
+                        <input type="text" autocomplete="address-line2" class="form-control" id="state" type="text">
                     </div>
                     <div class="form-group">
                         <label for="zip"><h5>Zip</h5></label>
-                        <input type="text" class="form-control" id="zip" type="text">
+                        <input type="text" autocomplete="postal-code" class="form-control" id="zip" type="text">
                     </div>
                     <div class="form-group">
                         <label for="commute"><h5>Desired Commute.</h5></label>
@@ -68,11 +70,11 @@
                         <i class="fa fa-trash"></i> Reset</button>
                 </form>
             </div>
-            <div class="container-fluid col-lg-4">
+            <div class="container-fluid col-lg-4" id="map-container">
                 <div class="row title">
-                    <h5 id="title" id="map">Map</h5>
+                    <h5 id="title" >Map</h5>
                 </div>
-                <div class="col-lg-12">
+                <div class="col-lg-12" id="map">
                     
                 </div>
             </div>
@@ -89,7 +91,7 @@
 
     <div class="container-fluid col-lg-10 offset-lg-1" id="section2">
         <div class="row title">
-            <h5 id=title>Results:</h5>
+            <h5 id="title">Results:</h5>
         </div>
         <div class="row trains-view">
             <div class="col-md-4">
@@ -120,5 +122,8 @@
             <a href="http://www.housecanary.com" target="_blank" style="font-family: Avenir, Lucida Sans, Verdana, Arial, Helvetica, sans-serif !important; font-size: 14px !important; line-height: 1 !important; color: #3c555c !important; letter-spacing: 0px !important; text-align: left !important; text-decoration: none !important; font-weight: normal !important;">Powered by <img src="https://s3-us-west-2.amazonaws.com/hc-pro-images/app/housecanary-attribution_logo%402x-1.png" alt="HouseCanary" title="HouseCanary" style="display: inline-block !important; width: 127px !important; height: 19px !important; margin-left: 6px !important;" /></a>
         </div>
     </div>
+    <script
+    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB8e6gTpgvxoyBbaRGAk-V3HhmicXOyVWk&callback=initMap" async defer>
+    </script>
 </body>
 </html>

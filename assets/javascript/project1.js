@@ -174,13 +174,13 @@ $(document).ready(function(){
         destinations2 =[]
         addresses =[]
         commutes = []
-        $("#addTrains").empty()
         database.ref().set({
             locations: locations,
             destinations: destinations2,
             addresses: addresses,
             commutes: commutes,
           });
+        $("#addTrains").empty()
     });   
       
     function initMap() {

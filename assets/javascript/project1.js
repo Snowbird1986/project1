@@ -152,7 +152,7 @@ $(document).ready(function(){
         // Add a marker clusterer to manage the markers.
         var markerCluster = new MarkerClusterer(map, markers,
             {imagePath: 'https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/m'});
-      })
+      
     
     // $("#run-search").on("click", function(event) {
     // // Don't refresh the page!
@@ -165,23 +165,25 @@ $(document).ready(function(){
     $("#state").val("");
     $("#zip").val("");
     });
+    
     $("#clear-all").on("click", function(event) {
         // Don't refresh the page!
         event.preventDefault();
         locations = []
         postData = []
-        destinations =""
+        destinations = []
         destinations2 =[]
-        addresses =[]
+        addresses = []
         commutes = []
-        $("#addTrains").empty()
         database.ref().set({
             locations: locations,
             destinations: destinations2,
             addresses: addresses,
             commutes: commutes,
           });
-    });   
+        $("#addTrains").empty()
+    });  
+}); 
       
     function initMap() {
 

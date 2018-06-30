@@ -24,6 +24,8 @@ $(document).ready(function(){
   var destinations2 =[]
   var addresses =[]
   var commutes = []
+  var desiredCommute = "0"
+  
     // var queryURLCanary = "https://api.housecanary.com/v2/property/on_market"
     var searchTerm = "address1=10851%20MASTIN%20BLVD&address2=OVERLAND%20PARK%2C%20KS%2066210";
     var queryURLOnboard = "https://search.onboard-apis.com/propertyapi/v1.0.0/property/address?" + searchTerm + "&radius=1&propertytype=SFR&orderby=distance&page=1&pagesize=100"
@@ -40,7 +42,22 @@ $(document).ready(function(){
     $("#run-search").on("click", function(event) {
         // Don't refresh the page!
         event.preventDefault();
+        $("#addTrains").empty()
+        locations = []
+        postData = []
+        destinations = []
+        destinations2 =[]
+        addresses = []
+        commutes = []
+        desiredCommute = 0
+        database.ref().set({
+            locations: locations,
+            destinations: destinations2,
+            addresses: addresses,
+            commutes: commutes,
+          });
         origin = $("#commuteAddress").val().trim()+" "+$("#city").val().trim()+" "+$("#state").val().trim()+" "+$("#zip").val().trim()
+        desiredCommute = $("#commute").val().trim()
         console.log(origin)
         searchTerm = "address1="+$("#commuteAddress").val().trim()+"&address2="+$("#city").val().trim()+" "+$("#state").val().trim()+" "+$("#zip").val().trim()
         console.log(searchTerm)
@@ -124,30 +141,10 @@ $(document).ready(function(){
                     destinations: destinations2,
                     addresses: addresses,
                     commutes: commutes,
+                    // desiredCommute:desiredCommute
                   });
                 }
     });
-
-    
-    database.ref().on("child_added", function(childSnapshot) {
-        for (var l = 0; l < childSnapshot.val().addresses.length; l++) {
-        $("#addTrains").append("<div class='row'><div class='col-md-4'> " + childSnapshot.val().addresses[l] +
-          " </div><div class='col-md-2'> " + childSnapshot.val().commutes[l] +
-            // " </div><div class='col-md-2'> " + childSnapshot.val().prices +
-            //   " </div><div class='col-md-2'> " + childSnapshot.val().footages +
-            //   " </div><div class='col-md-1'> " + childSnapshot.val().bedrooms +
-            //   " </div><div class='col-md-1'> " + childSnapshot.val().baths + 
-              " </div></div>");
-            }}
-      
-        // Handle the errors
-      , function(errorObject) {
-        console.log("Errors handled: " + errorObject.code);
-      });
-    
-
-
-
 
         // Add a marker clusterer to manage the markers.
         var markerCluster = new MarkerClusterer(map, markers,
@@ -164,6 +161,7 @@ $(document).ready(function(){
     $("#city").val("");
     $("#state").val("");
     $("#zip").val("");
+        
     });
     
     $("#clear-all").on("click", function(event) {
@@ -175,14 +173,38 @@ $(document).ready(function(){
         destinations2 =[]
         addresses = []
         commutes = []
+        desiredCommute = 0
+        $("#commuteAddress").val("");
+        $("#city").val("");
+        $("#state").val("");
+        $("#zip").val("");
         database.ref().set({
             locations: locations,
             destinations: destinations2,
             addresses: addresses,
             commutes: commutes,
+            // desiredCommute:desiredCommute
           });
         $("#addTrains").empty()
     });  
+    database.ref().on("child_added", function(childSnapshot) {
+        console.log(childSnapshot.val().addresses.length)
+        for (var l = 0; l < childSnapshot.val().addresses.length; l++) {
+
+        if(parseFloat(childSnapshot.val().commutes[l].slice(0,1)) <= parseFloat(desiredCommute.slice(0))){
+        $("#addTrains").append("<div class='row'><div class='col-md-4'> " + childSnapshot.val().addresses[l] +
+          " </div><div class='col-md-2'> " + childSnapshot.val().commutes[l] +
+            // " </div><div class='col-md-2'> " + childSnapshot.val().prices +
+            //   " </div><div class='col-md-2'> " + childSnapshot.val().footages +
+            //   " </div><div class='col-md-1'> " + childSnapshot.val().bedrooms +
+            //   " </div><div class='col-md-1'> " + childSnapshot.val().baths + 
+              " </div></div>");
+            }}}
+      
+        // Handle the errors
+      , function(errorObject) {
+        console.log("Errors handled: " + errorObject.code);
+      });
 }); 
       
     function initMap() {
@@ -210,4 +232,5 @@ $(document).ready(function(){
         var markerCluster = new MarkerClusterer(map, markers,
             {imagePath: 'https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/m'});
       }
+      
 

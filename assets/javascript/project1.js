@@ -24,6 +24,7 @@ $(document).ready(function(){
   var destinations2 =[]
   var addresses =[]
   var commutes = []
+  var zIndexes = []
   var desiredCommute = "0"
   
     // var queryURLCanary = "https://api.housecanary.com/v2/property/on_market"
@@ -49,12 +50,14 @@ $(document).ready(function(){
         destinations2 =[]
         addresses = []
         commutes = []
+        zIndexes = []
         desiredCommute = 0
         database.ref().set({
             locations: locations,
             destinations: destinations2,
             addresses: addresses,
             commutes: commutes,
+            zIndexes: zIndexes
           });
         origin = $("#commuteAddress").val().trim()+" "+$("#city").val().trim()+" "+$("#state").val().trim()+" "+$("#zip").val().trim()
         desiredCommute = $("#commute").val().trim()
@@ -114,10 +117,12 @@ $(document).ready(function(){
 
             var address = results[i].address.oneLine
             addresses.push(address)
-            var location = {lat:  results[i].location.latitude,  lng:  results[i].location.longitude};
+            var location = {lat:  parseFloat(results[i].location.latitude),  lng:  parseFloat(results[i].location.longitude)};
             locations.push(location)
             destination = results[i].location.latitude+" "+results[i].location.longitude
             destinations2.push(destination)
+            zIndex = i+1
+            zIndexes.push(zIndex)
             // console.log(destination)
             destinations += destination
  
@@ -133,22 +138,24 @@ $(document).ready(function(){
                 var results = response.rows[0]
                 for (var k = 0; k < 25; k++) {
                     var commute = results.elements[k].duration.text
-                    console.log(commute)
+                    // console.log(commute)
                     commutes.push(commute)
                 }
+                console.log(zIndexes)
                 database.ref().push({
                     locations: locations,
                     destinations: destinations2,
                     addresses: addresses,
                     commutes: commutes,
+                    zIndexes: zIndexes,
                     // desiredCommute:desiredCommute
                   });
                 }
     });
 
         // Add a marker clusterer to manage the markers.
-        var markerCluster = new MarkerClusterer(map, markers,
-            {imagePath: 'https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/m'});
+        // var markerCluster = new MarkerClusterer(map, markers,
+        //     {imagePath: 'https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/m'});
       
     
     // $("#run-search").on("click", function(event) {
@@ -161,6 +168,7 @@ $(document).ready(function(){
     $("#city").val("");
     $("#state").val("");
     $("#zip").val("");
+    
         
     });
     
@@ -183,15 +191,31 @@ $(document).ready(function(){
             destinations: destinations2,
             addresses: addresses,
             commutes: commutes,
+            zIndexes: zIndexes
             // desiredCommute:desiredCommute
           });
         $("#addTrains").empty()
     });  
     database.ref().on("child_added", function(childSnapshot) {
-        console.log(childSnapshot.val().addresses.length)
+        
+        var map = new google.maps.Map(document.getElementById('map'), {
+            zoom: 15,
+            center: childSnapshot.val().locations[0]
+          });
         for (var l = 0; l < childSnapshot.val().addresses.length; l++) {
 
         if(parseFloat(childSnapshot.val().commutes[l].slice(0,1)) <= parseFloat(desiredCommute.slice(0))){
+              // Create an array of alphabetical characters used to label the markers.
+            var labels = childSnapshot.val().addresses[l];
+            var labelIndex = 0
+            var zIndex = childSnapshot.val().zIndexes[l]
+            console.log(zIndex)
+            var marker = new google.maps.Marker({
+                position: childSnapshot.val().locations[l],
+                map : map,
+                label: labels,
+                zIndex: zIndex})
+            // initMap()
         $("#addTrains").append("<div class='row'><div class='col-md-4'> " + childSnapshot.val().addresses[l] +
           " </div><div class='col-md-2'> " + childSnapshot.val().commutes[l] +
             // " </div><div class='col-md-2'> " + childSnapshot.val().prices +
@@ -221,16 +245,13 @@ $(document).ready(function(){
         // Note: The code uses the JavaScript Array.prototype.map() method to
         // create an array of markers based on a given "locations" array.
         // The map() method here has nothing to do with the Google Maps API.
-        var markers = locations.map(function(location, i) {
-          return new google.maps.Marker({
-            position: location,
-            label: labels[i % labels.length]
-          });
-        });
+        var marker =  new google.maps.Marker({
+            // position: {lat: 38.922, lng: -94.6708},
+            map:map})
 
         // Add a marker clusterer to manage the markers.
-        var markerCluster = new MarkerClusterer(map, markers,
-            {imagePath: 'https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/m'});
+        // var markerCluster = new MarkerClusterer(map, markers,
+        //     {imagePath: 'https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/m'});
       }
       
 

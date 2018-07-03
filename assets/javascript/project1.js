@@ -25,7 +25,9 @@ $(document).ready(function(){
   var addresses =[]
   var commutes = []
   var zIndexes = []
+//   var geocodes = []
   var desiredCommute = "0"
+  var geocoder = new google.maps.Geocoder();
   
     // var queryURLCanary = "https://api.housecanary.com/v2/property/on_market"
     var searchTerm = "address1=10851%20MASTIN%20BLVD&address2=OVERLAND%20PARK%2C%20KS%2066210";
@@ -50,6 +52,7 @@ $(document).ready(function(){
         destinations2 =[]
         addresses = []
         commutes = []
+        // geocodes = []
         zIndexes = []
         desiredCommute = 0
         database.ref().set({
@@ -76,7 +79,7 @@ $(document).ready(function(){
         
     }).then(function(response) {
         var results = response.property
-        for (var j = 0; j < 25; j++) {
+        for (var j = 0; j < 10; j++) {
             addressZip = {"address": results[j].address.line1,
                           "zipcode": results[j].address.postal1}
             postData.push(addressZip)
@@ -113,7 +116,7 @@ $(document).ready(function(){
 
         // ========================
 
-        for (var i = 0; i < 25; i++) {
+        for (var i = 0; i < 10; i++) {
 
             var address = results[i].address.oneLine
             addresses.push(address)
@@ -125,8 +128,13 @@ $(document).ready(function(){
             zIndexes.push(zIndex)
             // console.log(destination)
             destinations += destination
+            // var geocode = codeAddress(address)
+            // console.log(geocode)
+            // geocodes.push(geocode)
+
  
         };
+        // console.log(geocodes)
         var service = new google.maps.DistanceMatrixService();
             service.getDistanceMatrix(
                 {
@@ -136,7 +144,7 @@ $(document).ready(function(){
                 }, callback);
             function callback(response, status) {
                 var results = response.rows[0]
-                for (var k = 0; k < 25; k++) {
+                for (var k = 0; k < 10; k++) {
                     var commute = results.elements[k].duration.text
                     // console.log(commute)
                     commutes.push(commute)
@@ -182,6 +190,8 @@ $(document).ready(function(){
         addresses = []
         commutes = []
         desiredCommute = 0
+        zIndexes = []
+        // geocodes = []
         $("#commuteAddress").val("");
         $("#city").val("");
         $("#state").val("");
@@ -199,22 +209,38 @@ $(document).ready(function(){
     database.ref().on("child_added", function(childSnapshot) {
         
         var map = new google.maps.Map(document.getElementById('map'), {
-            zoom: 15,
+            zoom: 17,
             center: childSnapshot.val().locations[0]
           });
         for (var l = 0; l < childSnapshot.val().addresses.length; l++) {
+            // console.log(parseFloat(childSnapshot.val().commutes[l].slice(0,1)))
+            // console.log(parseFloat(desiredCommute.slice(0)))
 
-        if(parseFloat(childSnapshot.val().commutes[l].slice(0,1)) <= parseFloat(desiredCommute.slice(0))){
-              // Create an array of alphabetical characters used to label the markers.
-            var labels = childSnapshot.val().addresses[l];
-            var labelIndex = 0
-            var zIndex = childSnapshot.val().zIndexes[l]
-            console.log(zIndex)
-            var marker = new google.maps.Marker({
-                position: childSnapshot.val().locations[l],
-                map : map,
-                label: labels,
-                zIndex: zIndex})
+            if(parseFloat(childSnapshot.val().commutes[l].slice(0,1)) <= parseFloat(desiredCommute.slice(0))){
+                // Create an array of alphabetical characters used to label the markers.
+                var labels = childSnapshot.val().addresses[l];
+                var labelIndex = 0
+                var zIndex = childSnapshot.val().zIndexes[l]
+                // console.log(labels)
+                // console.log(zIndex)
+                // setTimeout()
+                geocoder = new google.maps.Geocoder();
+                geocoder.geocode({ 'address': childSnapshot.val().addresses[l]}, function(results, status) {
+                    console.log(results[0].formatted_address)
+                    console.log(results)
+
+                // var labels = childSnapshot.val().addresses[l];
+                // var labelIndex = 0
+                // var zIndex = childSnapshot.val().zIndexes[l]
+
+                // console.log(zIndex)
+                // console.log(labels)
+                var marker = new google.maps.Marker({
+                    position: results[0].geometry.location,
+                    map : map,
+                    label: results[0].formatted_address,
+                    zIndex: zIndex})
+                })
             // initMap()
         $("#addTrains").append("<div class='row'><div class='col-md-4'> " + childSnapshot.val().addresses[l] +
           " </div><div class='col-md-2'> " + childSnapshot.val().commutes[l] +
@@ -253,5 +279,19 @@ $(document).ready(function(){
         // var markerCluster = new MarkerClusterer(map, markers,
         //     {imagePath: 'https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/m'});
       }
+    // function codeAddress(address) {
+    //     geocoder = new google.maps.Geocoder();
+    //     geocoder.geocode( { 'address': address}, function(results, status) {
+    //         if (status == 'OK') {
+    //         map.setCenter(results[0].geometry.location);
+    //         var marker = new google.maps.Marker({
+    //             map: map,
+    //             position: results[0].geometry.location
+    //         });
+    //         } else {
+    //         alert('Geocode was not successful for the following reason: ' + status);
+    //         }
+    //     });
+    // }
       
 

@@ -212,11 +212,13 @@ $(document).ready(function(){
             zoom: 17,
             center: childSnapshot.val().locations[0]
           });
+        
         for (var l = 0; l < childSnapshot.val().addresses.length; l++) {
-            // console.log(parseFloat(childSnapshot.val().commutes[l].slice(0,1)))
-            // console.log(parseFloat(desiredCommute.slice(0)))
+            console.log(parseFloat(childSnapshot.val().commutes[l].slice(0,2)))
+            console.log(parseFloat(desiredCommute.slice(0)))
+            console.log(parseFloat(childSnapshot.val().commutes[l].slice(0,2)) <= parseFloat(desiredCommute.slice(0)))
 
-            if(parseFloat(childSnapshot.val().commutes[l].slice(0,1)) <= parseFloat(desiredCommute.slice(0))){
+            if(parseFloat(childSnapshot.val().commutes[l].slice(0,2)) <= parseFloat(desiredCommute.slice(0))){
                 // Create an array of alphabetical characters used to label the markers.
                 var labels = childSnapshot.val().addresses[l];
                 var labelIndex = 0
